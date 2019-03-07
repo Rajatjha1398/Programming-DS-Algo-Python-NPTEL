@@ -1,64 +1,61 @@
 #link for question
 #https://onlinecourses.nptel.ac.in/noc19_cs08/progassignment?action=submit&name=108
 
-def borrowers_input(b):
-    x=input()
-    while x!='Checkouts':
-        x=x.split('~')
-        b.append(x)
-        x=input()
+def gradetonum(grade):
+    if grade == 'A':
+        return(10)
+    elif grade == 'AB':
+        return(9)
+    elif grade == 'B':
+        return(8)
+    elif grade == 'BC':
+        return(7)
+    elif grade == 'C':
+        return(6)
+    elif grade == 'CD':
+        return(5)
+    elif grade == 'D':
+        return(4)
+    else:
+        return(0)
+                   
+rollname = {}
+gradepoint = {}
+coursecount = {}
 
-def checkouts_input(c):
-    x=input()
-    while x!='EndOfInput':
-        x=x.split('~')
-        c.append(x)
-        x=input()
+nextline = input().strip()
+while nextline.find("Courses") < 0:
+    nextline = input().strip()
 
-def output():
-    global books,borrower,checkout
-    date=[]
-    uname=[]
-    name=[]
-    Anum=[]
-    title=[]
-    for i in range(0,len(checkout)):
-        date.append(checkout[i][2])
+# Read course data
+while nextline.find("Students") < 0:
+    nextline = input().strip()
+    # Course data is irrelevant
 
-    for i in range(0,len(checkout)):
-        uname.append(checkout[i][0])
+nextline = input().strip()
+# Read students data
+while nextline.find("Grades") < 0:
+    fields = nextline.split('~')
+    roll=fields[0]
+    name=fields[1]
+    rollname[roll] = name
+    gradepoint[roll] = 0
+    coursecount[roll] = 0
+    nextline = input().strip()
 
-    for i in range(0,len(uname)):
-        for j in range(0,len(borrower)):
-            if(uname[i] == borrower[j][0]):
-                name.append(borrower[j][1])
+nextline = input().strip()
+# Read grades data
+while nextline.find("EndOfInput") < 0:
+    fields = nextline.split('~')
+    roll=fields[3]
+    grade=fields[4]
+    gradepoint[roll] += gradetonum(grade)
+    coursecount[roll] += 1
+    nextline = input().strip()
 
-    for i in range(0,len(checkout)):
-        Anum.append(checkout[i][1])
-
-    for i in range(0,len(Anum)):
-        for j in range(0,len(books)):
-            if(Anum[i] == books[j][0]):
-                title.append(books[j][1])
-
-    final=[]
-    for i in range(0,len(checkout)):
-        final.append(date[i]+'~'+name[i]+'~'+Anum[i]+'~'+title[i])
-    final.sort()
-    for i in range(0,len(final)):
-        print(final[i])
-
-
-books=[]
-borrower=[]
-checkout=[]
-x=input()
-x=input()
-while x!='Borrowers':
-    x=x.split('~')
-    books.append(x)
-    x=input()
-borrowers_input(borrower)
-borrower.sort()
-checkouts_input(checkout)
-output()
+for roll in sorted(rollname.keys()):
+    if coursecount[roll] > 0:
+        gpa = round(gradepoint[roll]/coursecount[roll],2)
+    else:
+        gpa = 0
+    print(roll,rollname[roll],gpa,sep='~',end='\n' )
